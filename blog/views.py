@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 def index(request):
-    return HttpResponse('this is index function')
+    return render(request, "blog/index.html")
 
 
 def posts(request):
