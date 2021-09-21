@@ -8,7 +8,7 @@ def index(request):
 
 
 def posts(request):
-    return HttpResponse('this is posts function')
+    return render(request, "blog/all_posts.html")
 
 
 def individual_post(request, slug):
