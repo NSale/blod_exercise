@@ -1,7 +1,7 @@
 from datetime import date
 from django.shortcuts import render
 
-posts = [
+all_posts = [
     {
         "slug": "hike-in-the-mountains",
         "image": "mountains.jpg",
@@ -68,16 +68,36 @@ posts = [
 ]
 
 
+def get_date(post):
+    return post['date']
+
+
 # Create your views here.
 def index(request):
-    return render(request, "blog/index.html")
+    sorted_posts = sorted(all_posts, key=get_date)
+    latest_posts = sorted_posts[-3:]
+    return render(request, "blog/index.html", {
+        "posts": latest_posts,
+    })
 
 
 def posts(request):
-    return render(request, "blog/all_posts.html")
+    return render(request, "blog/all_posts.html", {
+        "posts": all_posts,
+    })
+
+# depricated
+# def get_post(slug):
+#     for post in all_posts:
+#         if post['slug'] == slug:
+#             return post
+#         else:
+#             continue
 
 
 def individual_post(request, slug):
+    identified_post = next(post for post in all_posts if post['slug'] == slug)
     return render(request, "blog/post_detail.html", {
-        'slug': slug,
+        # 'post': get_post(slug),
+        'post': identified_post,
     })
