@@ -82,10 +82,22 @@ def index(request):
 
 
 def posts(request):
-    return render(request, "blog/all_posts.html")
+    return render(request, "blog/all_posts.html", {
+        "posts": all_posts,
+    })
+
+# depricated
+# def get_post(slug):
+#     for post in all_posts:
+#         if post['slug'] == slug:
+#             return post
+#         else:
+#             continue
 
 
 def individual_post(request, slug):
+    identified_post = next(post for post in all_posts if post['slug'] == slug)
     return render(request, "blog/post_detail.html", {
-        'slug': slug,
+        # 'post': get_post(slug),
+        'post': identified_post,
     })
