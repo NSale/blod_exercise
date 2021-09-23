@@ -1,0 +1,11 @@
+In order to run this app on your computer, do the following (python3 and pip should already be installed):
+- create a new folder
+- go inside of it with `cd {folder_name}`
+- create a new python env with `python3 -m venv {env_name}`
+- activate new python environment with `source /{env_name}/bin/activate`
+- install Django with `pip3 install django`
+- clone this repo to that folder, next to the {env_name} folder
+- go inside the "my_blog" folder
+- start the local server and the app with `python3 manage.py runserver`
+- in your browser, go to the `http://127.0.0.1:8000/` and notice the landing page of the app
+- that's it, enjoy.
