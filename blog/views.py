@@ -1,5 +1,4 @@
-from datetime import date
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from blog.models import Post
 
 all_posts = Post.objects.all()
@@ -7,8 +6,9 @@ all_posts = Post.objects.all()
 
 # Create your views here.
 def index(request):
+    sorted_posts = all_posts.order_by('-date')[:3]
     return render(request, "blog/index.html", {
-        "posts": all_posts,
+        "posts": sorted_posts,
     })
 
 
@@ -19,8 +19,9 @@ def posts(request):
 
 
 def individual_post(request, slug):
-    identified_post = next(post for post in all_posts if post.slug == slug)
+    identified_post = get_object_or_404(Post, slug=slug)
+    tags = identified_post.tags.all()
     return render(request, "blog/post_detail.html", {
-        # 'post': get_post(slug),
         'post': identified_post,
+        'tags': tags,
     })
