@@ -1,27 +1,34 @@
-from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 from blog.models import Post
 
 all_posts = Post.objects.all()
 
 
 # Create your views here.
-def index(request):
-    sorted_posts = all_posts.order_by('-date')[:3]
-    return render(request, "blog/index.html", {
-        "posts": sorted_posts,
-    })
+class IndexView(ListView):
+    template_name = "blog/index.html"
+    model = Post
+    ordering = ['-date']
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        data = queryset[:3]
+        return data
 
 
-def posts(request):
-    return render(request, "blog/all_posts.html", {
-        "posts": all_posts,
-    })
+class Posts(ListView):
+    template_name = "blog/all_posts.html"
+    model = Post
+    ordering = ['-date']
+    context_object_name = 'posts'
 
 
-def individual_post(request, slug):
-    identified_post = get_object_or_404(Post, slug=slug)
-    tags = identified_post.tags.all()
-    return render(request, "blog/post_detail.html", {
-        'post': identified_post,
-        'tags': tags,
-    })
+class IndividualPostView(DetailView):
+    template_name = "blog/post_detail.html"
+    model = Post
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tags'] = self.object.tags.all()
+        return context
