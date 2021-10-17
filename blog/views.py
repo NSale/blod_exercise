@@ -32,27 +32,28 @@ class Posts(ListView):
 class IndividualPostView(View):
 
     def get(self, request, slug):
-        post = Post.objects.get(slug=slug)
-        context = {
-            'post': post,
-            'tags': post.tags.all(),
-            'comment_form': CommentForm(),
-        }
+        context = self.get_context(slug, comment_form=CommentForm())
         return render(request, 'blog/post_detail.html', context)
 
     def post(self, request, slug):
-        post = Post.objects.get(slug=slug)
         comment_form = CommentForm(request.POST)
+        context = self.get_context(slug, comment_form=comment_form)
 
         if comment_form.is_valid():
             comment = comment_form.save(commit=False)
-            comment.post = post
+            comment.post = context['post']
             comment.save()
             return HttpResponseRedirect(reverse('individual_post', args=[slug]))
 
+        return render(request, 'blog/post_detail.html', context)
+
+    @staticmethod
+    def get_context(self, slug, comment_form):
+        post = Post.objects.get(slug=slug)
         context = {
             'post': post,
             'tags': post.tags.all(),
             'comment_form': comment_form,
+            'comments': post.comments.all().order_by('-id'),
         }
-        return render(request, 'blog/post_detail.html', context)
+        return context
