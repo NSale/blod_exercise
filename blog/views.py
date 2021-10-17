@@ -1,5 +1,10 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
+from django.views import View
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from blog.models import Post
+from .forms import CommentForm
 
 all_posts = Post.objects.all()
 
@@ -24,11 +29,31 @@ class Posts(ListView):
     context_object_name = 'posts'
 
 
-class IndividualPostView(DetailView):
-    template_name = "blog/post_detail.html"
-    model = Post
+class IndividualPostView(View):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['tags'] = self.object.tags.all()
+    def get(self, request, slug):
+        context = self.get_context(slug, comment_form=CommentForm())
+        return render(request, 'blog/post_detail.html', context)
+
+    def post(self, request, slug):
+        comment_form = CommentForm(request.POST)
+        context = self.get_context(slug, comment_form=comment_form)
+
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = context['post']
+            comment.save()
+            return HttpResponseRedirect(reverse('individual_post', args=[slug]))
+
+        return render(request, 'blog/post_detail.html', context)
+
+    @staticmethod
+    def get_context(self, slug, comment_form):
+        post = Post.objects.get(slug=slug)
+        context = {
+            'post': post,
+            'tags': post.tags.all(),
+            'comment_form': comment_form,
+            'comments': post.comments.all().order_by('-id'),
+        }
         return context
