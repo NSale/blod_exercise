@@ -48,7 +48,7 @@ class IndividualPostView(View):
         return render(request, 'blog/post_detail.html', context)
 
     @staticmethod
-    def get_context(self, slug, comment_form):
+    def get_context(slug, comment_form):
         post = Post.objects.get(slug=slug)
         context = {
             'post': post,
