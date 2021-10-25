@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    My stored Posts
+{% endblock %}
+
+{% block content %}
+    <section>
+        {% if not has_posts %}
+            <p>You didn't saved any post for later.</p>
+        {% endif %}
+        <ul>
+            {% for post in stored_posts %}
+            <li><a href="{% url 'individual_post' post.slug %}">{{ post.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}
